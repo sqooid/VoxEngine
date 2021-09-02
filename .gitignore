@@ -11,3 +11,7 @@ Test/
 *.old
 
 Plan.txt
+
+# Assets
+!bin/Sandbox/*/assets/
+!bin/Sandbox/*/shaders/
