@@ -1,0 +1,13 @@
+bin/
+bin-int/
+obj_testing/
+Test/
+.vs/
+
+*.sln
+*.vcxproj
+*.filters
+*.user
+*.old
+
+Plan.txt
