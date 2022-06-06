@@ -15,17 +15,14 @@ namespace vox
 	class ObjLoader
 	{
 	public:
-		bool loadFile(std::string filePath);
+		ObjLoader();
+		bool loadFile(std::string filePath, int corners);
+		std::shared_ptr<std::vector<uint32_t>> getData();
 
-		/**
-		 * @brief Copies all vertices in loader's vertex list into float pointer (array) in interleaved form in the order: pos, col, norm
-		 * @param oArrPtr pointer to front of float array
-		*/
-		void setBuffer(unsigned int* oArrPtr) const;
 		int getVertexCount() const;
 		int getDataSize() const;
 	private:
-		std::vector<Vertex> mVertexList;
+		std::shared_ptr<std::vector<uint32_t>> m_VertexList;
 	};
 
 	class PngLoader

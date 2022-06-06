@@ -24,12 +24,17 @@ namespace vox
 		return m_Parent->getSub(type);
 	}
 
-	vox::Renderer* Subsystem::getRenderer()
+	Renderer* Subsystem::getRenderer()
 	{
 		return m_Parent->getRenderer();
 	}
 
-	vox::EventHandler* Subsystem::getEventHandler()
+	Scene* Subsystem::getScene()
+	{
+		return m_Parent->getScene();
+	}
+
+	EventHandler* Subsystem::getEventHandler()
 	{
 		return m_Parent->getEventHandler();
 	}

@@ -4,6 +4,7 @@ workspace "VoxWorld"
 
 	-- Global settings
 	system "Windows"
+	systemversion "latest"
 	architecture "x86"
 	language "C++"
 	cppdialect "C++17"
@@ -11,22 +12,6 @@ workspace "VoxWorld"
 	defines { 
 		"_CRT_SECURE_NO_WARNINGS", 
 		"_CONSOLE"
-	}
-
-	-- Global library links
-	libdirs {
-		"%{wks.location}/Dependencies/GLFW/lib",
-		"%{wks.location}/Dependencies/libpng/lib",
-		"%{wks.location}/Dependencies/zlib/lib",
-	}
-	links {
-		"glfw3.lib",
-		"libpng16_static.lib",
-		"zlibstatic.lib",
-	}
-
-	-- Global includes
-	files {
 	}
 
 	-- VoxEngine include directories also needed by users
@@ -37,7 +22,7 @@ workspace "VoxWorld"
 		"%{wks.location}/Dependencies/GLFW/include",
 		"%{wks.location}/Dependencies/libpng/include",
 		"%{wks.location}/Dependencies/zlib/include",
-		-- Shared including of engine sources for headers
+		"%{wks.location}/Dependencies/FMT/include",
 	}
 
 	-- Global configuration settings
@@ -67,7 +52,7 @@ project "VoxEngine"
 		"%{wks.location}/%{prj.name}/**.c",
 		"%{wks.location}/%{prj.name}/**.hpp",
 		"%{wks.location}/%{prj.name}/**.h",
-		"%{wks.location}/Dependencies/glad/*",
+		"%{wks.location}/Dependencies/glad/*.c",
 	}
 	includedirs {
 		"%{prj.location}/src",
@@ -86,7 +71,6 @@ project "VoxEngine"
 
 	filter {}
 
-	-- Shared precompiled headers
 	pchheader "voxpch.h"
 	pchsource "../VoxEngine/voxpch/voxpch.cpp"
 
@@ -107,30 +91,46 @@ project "Sandbox"
 		"%{wks.location}/VoxEngine/voxpch",
 		"%{wks.location}/VoxEngine/src"
 	}
+	-- Library links
+	libdirs {
+		"%{wks.location}/Dependencies/GLFW/lib",
+		"%{wks.location}/Dependencies/libpng/lib",
+		"%{wks.location}/Dependencies/zlib/lib",
+		"%{wks.location}/Dependencies/FMT/lib",
+	}
+	links {
+		"glfw3.lib",
+		"libpng16_static.lib",
+		"zlibstatic.lib",
+	}
 	links {
 		"VoxEngine",
 	}
+
 	filter "configurations:Debug"
 		targetname "sandbox_d"
 		targetdir "../bin/%{prj.name}/debug"
 		debugdir "../bin/%{prj.name}/debug"
 		objdir "../bin-int/%{prj.name}/debug"
+		links {
+			"fmtd.lib"
+		}
 
 	filter "configurations:Release"
 		targetname "sandbox"
 		targetdir "../bin/%{prj.name}/release"
 		objdir "../bin-int/%{prj.name}/release"
-		
+		links {
+			"fmt.lib"
+		}		
 	filter {}
 
-	-- Shared precompiled headers
 	pchheader "voxpch.h"
 	pchsource "../VoxEngine/voxpch/voxpch.cpp"
 
 
 workspace "VoxWorld"
 	startproject "Sandbox"
-	-- Disabling precompiled headers on dependencies
 	filter "files:**.c"
 		flags "NoPCH"
 	filter {}

@@ -201,11 +201,15 @@ namespace vox
 
 	void Archsystem::initializeSubsystems()
 	{
-		m_Renderer = std::make_unique<Renderer>();
+		m_Renderer = std::make_shared<Renderer>();
 		m_Renderer->setParent(this);
 
-		m_EventHandler = std::make_unique<EventHandler>();
+		m_Scene = std::make_shared<Scene>();
+		m_Scene->setParent(this);
+
+		m_EventHandler = std::make_shared<EventHandler>();
 		m_EventHandler->setParent(this);
+
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 			{
 				Archsystem* arch = static_cast<Archsystem*>(glfwGetWindowUserPointer(window));
@@ -230,6 +234,11 @@ namespace vox
 	Renderer* Archsystem::getRenderer()
 	{
 		return m_Renderer.get();
+	}
+
+	vox::Scene* Archsystem::getScene()
+	{
+		return m_Scene.get();
 	}
 
 	EventHandler* Archsystem::getEventHandler()

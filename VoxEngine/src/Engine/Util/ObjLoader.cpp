@@ -14,12 +14,17 @@ namespace vox
 	glm::vec2 splitSpaceVec2(std::istringstream& s_line);
 
 
+	ObjLoader::ObjLoader()
+	{
+		m_VertexList = std::make_shared<std::vector<uint32_t>>();
+	}
+
 	/**
 	 * @brief Loads and parses .obj file and stores vertex data in current ObjLoader instance
 	 * @param filePath Path to .obj to be loaded
 	 * @return true if successfully loaded object
 	*/
-	bool ObjLoader::loadFile(std::string filePath)
+	bool ObjLoader::loadFile(std::string filePath, int corners)
 	{
 		std::ifstream file(filePath);
 
@@ -31,8 +36,8 @@ namespace vox
 
 		// Buffers for values
 		std::vector<glm::vec3> vertices;
-		std::vector<unsigned int> normals;
-		std::vector<unsigned int> colors;
+		std::vector<uint32_t> normals;
+		std::vector<uint32_t> colors;
 
 		// PNG loader
 		PngLoader pngLoader;
@@ -88,53 +93,52 @@ namespace vox
 
 			else if (head == "f")
 			{
-				for (std::string vertex; std::getline(s_line, vertex, ' '); )
+				std::string index;
+				std::istringstream s_vertex;
+				for (int i = 0; i < corners; ++i)
 				{
-					std::istringstream s_vertex(vertex);
-					std::string index;
+					std::string vertex;
+					std::getline(s_line, vertex, ' ');
+					s_vertex = std::istringstream(vertex);
+
 					// Vertex index
 					std::getline(s_vertex, index, '/');
 					glm::vec3& pos = vertices[std::stoi(index) - 1];
-
-					// Color index
-					std::getline(s_vertex, index, '/');
-					unsigned int& col = colors[std::stoi(index) - 1];
-
-					// Normal index
-					std::getline(s_vertex, index);
-					unsigned int& norm = normals[std::stoi(index) - 1];
-
-					mVertexList.emplace_back(Vertex(pos, col, norm));
+					m_VertexList->push_back(*reinterpret_cast<uint32_t*>(&pos.x));
+					m_VertexList->push_back(*reinterpret_cast<uint32_t*>(&pos.y));
+					m_VertexList->push_back(*reinterpret_cast<uint32_t*>(&pos.z));
 				}
+
+				// Color index
+				std::getline(s_vertex, index, '/');
+				uint32_t col = colors[std::stoi(index) - 1];
+				m_VertexList->push_back(col);
+
+				// Normal index
+				std::getline(s_vertex, index);
+				uint32_t norm = normals[std::stoi(index) - 1];
+				m_VertexList->push_back(norm);
+
+				std::getline(s_line, head);
 			}
 		}
 
 		return true;
 	}
 
-	void ObjLoader::setBuffer(uint32_t* oArrPtr) const
+	std::shared_ptr<std::vector<glm::uint32_t>> ObjLoader::getData()
 	{
-		int i = 0;
-		for (const Vertex& vert : mVertexList)
-		{
-			oArrPtr[i++] = *reinterpret_cast<const uint32_t*>(&vert.mPosition.x);
-			oArrPtr[i++] = *reinterpret_cast<const uint32_t*>(&vert.mPosition.y);
-			oArrPtr[i++] = *reinterpret_cast<const uint32_t*>(&vert.mPosition.z);
-
-			oArrPtr[i++] = vert.mColor;
-
-			oArrPtr[i++] = vert.mNormal;
-		}
+		return m_VertexList;
 	}
 
 	int ObjLoader::getVertexCount() const
 	{
-		return mVertexList.size();
+		return m_VertexList->size();
 	}
 
 	int ObjLoader::getDataSize() const
 	{
-		return mVertexList.size() * 5 * 4;
+		return m_VertexList->size() * 5 * 4;
 	}
 
 	glm::vec3 splitSpaceVec3(std::istringstream& s_line)

@@ -31,6 +31,5 @@ layout (location = 0) out vec4 fragColor;
 
 void main()
 {
-	vec4 light = normalize(vec4(1.0, -1.0, -1.0, 0.0));
-	fragColor = vec4(outColor) * dot(outNormal, light);
+	fragColor = vec4(outColor);
 }

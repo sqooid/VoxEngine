@@ -3,7 +3,9 @@
 namespace vox
 {
 	class Renderer;
+	class Scene;
 	class EventHandler;
+
 
 	class Archsystem;
 
@@ -18,23 +20,17 @@ namespace vox
 	public:
 		Subsystem();
 		Subsystem(Archsystem* parent);
+		virtual ~Subsystem() = default;
 
 		void setParent(Archsystem* parent);
 
 		virtual void onAttach() {};
 
-		/**
-		 * @brief Contains all things that need to be run by subsystem before each frame is rendered
-		*/
 		virtual void onUpdate() {};
 
-		/**
-		 * @brief Gives pointer to another subsystem contained in over-arching system
-		 * @param type Enumerated type of system to get pointer to
-		 * @return Pointer to specified subsystem
-		*/
 		Subsystem* getSub(SubType type);
 		Renderer* getRenderer();
+		Scene* getScene();
 		EventHandler* getEventHandler();
 	private:
 		Archsystem* m_Parent;
